@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const VAPI_API_KEY = process.env.VAPI_PRIVATE_KEY;
-const ASSISTANT_ID = 'de3e42d4-9c6e-42ee-8496-ad155a73f14b';
-const NGROK_URL = process.env.SERVER_URL || 'https://01d7-2407-aa80-14-5544-d990-8a93-8e80-c39b.ngrok-free.app';
+const ASSISTANT_ID = process.env.VAPI_ASSISTANT_ID || 'YOUR_ASSISTANT_ID';
+const NGROK_URL = process.env.SERVER_URL || 'http://localhost:3000';
 
 async function updateAssistant() {
   const config = {

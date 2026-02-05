@@ -73,17 +73,12 @@
   </div>
 
   <script>
-    const VAPI_PUBLIC_KEY = '1ad702ab-a8b7-46c8-a72c-2ffe9c453c2e';
+    // Get from your Vapi dashboard: https://dashboard.vapi.ai
+    const VAPI_PUBLIC_KEY = 'YOUR_VAPI_PUBLIC_KEY';
 
-    // Assistant variants - change this to switch
-    const ASSISTANTS = {
-      fast: 'de3e42d4-9c6e-42ee-8496-ad155a73f14b',     // Groq + Deepgram (fastest)
-      premium: '7a1d317b-9278-4057-83d2-121a3fc35665',  // Claude + ElevenLabs + Office ambience
-      ultra: '3dbfd15d-1f2e-44d1-aae9-5f988022c2f6'     // GPT-4 + ElevenLabs + Office ambience
-    };
-
-    // SET YOUR PREFERRED VARIANT HERE:
-    const ASSISTANT_ID = ASSISTANTS.premium;
+    // Assistant IDs - create with: npm run vapi:setup
+    // Get IDs from Vapi dashboard after running scripts/create-assistants.ts
+    const ASSISTANT_ID = 'YOUR_ASSISTANT_ID';
 
     function addTranscript(role, text) {
       const transcript = document.getElementById('transcript');

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const VAPI_API_KEY = process.env.VAPI_PRIVATE_KEY;
-const NGROK_URL = 'https://01d7-2407-aa80-14-5544-d990-8a93-8e80-c39b.ngrok-free.app';
+const NGROK_URL = process.env.SERVER_URL || 'http://localhost:3000';
 
 const systemPrompt = `You are Sarah, a 26-year-old dental receptionist at Smile Dental. You're friendly, warm, and sound completely natural - like a real person on the phone, not an AI.
 
@@ -230,7 +230,7 @@ async function main() {
   // Update existing assistant with Variant 1 (Fast)
   console.log('1. Updating main assistant (Fast - Groq)...');
   try {
-    const result1 = await createOrUpdateAssistant(variant1, 'de3e42d4-9c6e-42ee-8496-ad155a73f14b');
+    const result1 = await createOrUpdateAssistant(variant1, process.env.VAPI_ASSISTANT_ID);
     console.log(`   ✅ ${result1.name} - ID: ${result1.id}`);
   } catch (e: any) {
     console.log(`   ❌ Error: ${e.message}`);
