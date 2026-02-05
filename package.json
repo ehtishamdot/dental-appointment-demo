@@ -1,0 +1,29 @@
+{
+  "name": "dental-appointment-api",
+  "version": "1.0.0",
+  "description": "AI Voice SaaS API for dental appointment booking with idempotency and concurrency control",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:setup": "tsx src/db/setup.ts",
+    "vapi:setup": "tsx scripts/setup-vapi-assistant.ts --create",
+    "vapi:list": "tsx scripts/setup-vapi-assistant.ts",
+    "test:demo": "tsx test/demo.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2"
+  }
+}
