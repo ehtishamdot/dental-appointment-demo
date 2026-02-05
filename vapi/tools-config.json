@@ -1,0 +1,73 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "book_appointment",
+      "description": "Book a dental appointment for a patient. Call this when the patient wants to schedule an appointment and you have collected their name, preferred date, and time.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "patient_name": {
+            "type": "string",
+            "description": "The patient's full name"
+          },
+          "patient_phone": {
+            "type": "string",
+            "description": "The patient's phone number for contact"
+          },
+          "appointment_date": {
+            "type": "string",
+            "description": "The date for the appointment (e.g., '2025-02-10', 'tomorrow', 'next Monday')"
+          },
+          "appointment_time": {
+            "type": "string",
+            "description": "The time for the appointment (e.g., '10:00 AM', '2:30 PM')"
+          },
+          "reason_for_visit": {
+            "type": "string",
+            "description": "The reason for the dental visit (e.g., 'cleaning', 'checkup', 'toothache')"
+          }
+        },
+        "required": ["patient_name", "appointment_date", "appointment_time"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "check_availability",
+      "description": "Check available appointment slots for a specific date. Call this when the patient asks what times are available.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "The date to check availability for (e.g., '2025-02-10', 'tomorrow')"
+          }
+        },
+        "required": ["date"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "cancel_appointment",
+      "description": "Cancel an existing appointment. Call this when the patient wants to cancel their appointment.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "appointment_id": {
+            "type": "string",
+            "description": "The appointment ID to cancel (if known)"
+          },
+          "patient_phone": {
+            "type": "string",
+            "description": "The patient's phone number to look up their appointment"
+          }
+        },
+        "required": []
+      }
+    }
+  }
+]
