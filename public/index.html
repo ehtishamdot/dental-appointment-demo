@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dental Appointment - Voice Booking</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { text-align: center; max-width: 400px; width: 100%; }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #1a1a2e; font-size: 28px; margin-bottom: 8px; }
+    .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+    .vapi-button-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .status { font-size: 16px; color: #333; margin-bottom: 8px; font-weight: 500; }
+    .hint { font-size: 13px; color: #888; margin-bottom: 20px; }
+    .transcript {
+      margin-top: 16px; padding: 16px;
+      background: #f8f9fa; border-radius: 12px;
+      text-align: left; max-height: 200px;
+      overflow-y: auto;
+    }
+    .transcript-line { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .transcript-line:last-child { border-bottom: none; }
+    .transcript-line.user { color: #667eea; }
+    .transcript-line.assistant { color: #333; }
+    .transcript-line.system { color: #888; font-style: italic; }
+    .transcript-label { font-weight: 600; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
+    .server-status { margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 8px; font-size: 12px; color: #666; }
+    .server-status.online { background: #d4edda; color: #155724; }
+    .server-status.offline { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🦷 Smile Dental</h1>
+      <p class="subtitle">Voice-Powered Appointment Booking</p>
+
+      <div class="vapi-button-container" id="vapiContainer">
+        <!-- Vapi button will be rendered here -->
+      </div>
+
+      <p class="status" id="status">Click the button above to start</p>
+      <p class="hint" id="hint">Talk to Sarah to book your dental appointment</p>
+
+      <div class="transcript" id="transcript">
+        <div class="transcript-line system">
+          <div class="transcript-label">System</div>
+          Loading Vapi...
+        </div>
+      </div>
+
+      <div class="server-status" id="serverStatus">Checking server...</div>
+    </div>
+  </div>
+
+  <script>
+    const VAPI_PUBLIC_KEY = '1ad702ab-a8b7-46c8-a72c-2ffe9c453c2e';
+
+    // Assistant variants - change this to switch
+    const ASSISTANTS = {
+      fast: 'de3e42d4-9c6e-42ee-8496-ad155a73f14b',     // Groq + Deepgram (fastest)
+      premium: '7a1d317b-9278-4057-83d2-121a3fc35665',  // Claude + ElevenLabs + Office ambience
+      ultra: '3dbfd15d-1f2e-44d1-aae9-5f988022c2f6'     // GPT-4 + ElevenLabs + Office ambience
+    };
+
+    // SET YOUR PREFERRED VARIANT HERE:
+    const ASSISTANT_ID = ASSISTANTS.premium;
+
+    function addTranscript(role, text) {
+      const transcript = document.getElementById('transcript');
+      const line = document.createElement('div');
+      line.className = `transcript-line ${role}`;
+      const label = document.createElement('div');
+      label.className = 'transcript-label';
+      label.textContent = role === 'user' ? 'You' : role === 'assistant' ? 'Sarah' : 'System';
+      line.appendChild(label);
+      line.appendChild(document.createTextNode(text));
+      transcript.appendChild(line);
+      transcript.scrollTop = transcript.scrollHeight;
+    }
+
+    function updateStatus(text, hint) {
+      document.getElementById('status').textContent = text;
+      if (hint) document.getElementById('hint').textContent = hint;
+    }
+
+    // Check backend server
+    async function checkServer() {
+      const el = document.getElementById('serverStatus');
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          el.className = 'server-status online';
+          el.textContent = '✓ Backend server online';
+        } else throw new Error();
+      } catch {
+        el.className = 'server-status offline';
+        el.textContent = '✗ Backend offline - voice booking will fail';
+      }
+    }
+
+    // Load Vapi script
+    (function (d, t) {
+      var g = document.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+      g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+      g.defer = true;
+      g.async = true;
+      s.parentNode.insertBefore(g, s);
+
+      g.onload = function () {
+        addTranscript('system', 'Vapi SDK loaded');
+
+        // Initialize Vapi
+        var vapi = window.vapiSDK.run({
+          apiKey: VAPI_PUBLIC_KEY,
+          assistant: ASSISTANT_ID,
+          config: {
+            position: "bottom-right",
+            offset: "40px",
+          }
+        });
+
+        // Event listeners
+        vapi.on('call-start', () => {
+          addTranscript('system', 'Call started - speak to Sarah');
+          updateStatus('Call in progress', 'Click button to end call');
+        });
+
+        vapi.on('call-end', () => {
+          addTranscript('system', 'Call ended');
+          updateStatus('Call ended', 'Click button to start new call');
+        });
+
+        vapi.on('speech-start', () => {
+          updateStatus('Sarah is speaking...', 'Listen to the response');
+        });
+
+        vapi.on('speech-end', () => {
+          updateStatus('Listening...', 'Speak your request');
+        });
+
+        vapi.on('message', (message) => {
+          console.log('Vapi message:', message);
+          if (message.type === 'transcript' && message.transcriptType === 'final') {
+            addTranscript(message.role, message.transcript);
+          }
+          if (message.type === 'function-call') {
+            addTranscript('system', 'Booking appointment...');
+          }
+          if (message.type === 'function-call-result') {
+            const result = message.functionCallResult;
+            if (result && result.result) {
+              try {
+                const data = JSON.parse(result.result);
+                if (data.success) {
+                  addTranscript('system', '✓ ' + data.message);
+                } else {
+                  addTranscript('system', '✗ ' + data.message);
+                }
+              } catch (e) {
+                // ignore parse errors
+              }
+            }
+          }
+        });
+
+        vapi.on('error', (e) => {
+          console.error('Vapi error:', e);
+          addTranscript('system', 'Error: ' + (e.message || JSON.stringify(e)));
+          updateStatus('Error occurred', 'Click button to try again');
+        });
+
+        updateStatus('Ready!', 'Click the button to talk to Sarah');
+        addTranscript('system', 'Ready - click button to start call');
+      };
+
+      g.onerror = function () {
+        addTranscript('system', 'Failed to load Vapi SDK');
+        updateStatus('Failed to load', 'Please refresh the page');
+      };
+    })(document, "script");
+
+    // Check server status
+    checkServer();
+    setInterval(checkServer, 10000);
+  </script>
+</body>
+</html>
